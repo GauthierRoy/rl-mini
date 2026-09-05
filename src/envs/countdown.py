@@ -3,16 +3,17 @@ Core synthetic-data lesson: generate solution first, then problem. Guarantees so
 """
 
 import ast
-import operator
+import logging
 import random
 import re
 
-OPS = {"+": operator.add, "-": operator.sub, "*": operator.mul, "/": operator.truediv}
+logger = logging.getLogger(__name__)
 
 
 def _safe_eval(expr: str) -> float | None:
     # only digits, +-*/(), spaces
     if not re.fullmatch(r"[\d\s\+\-\*\/\(\)\.]+", expr):
+        logger.debug("rejected by charset: %r", expr[:100])
         return None
     try:
         tree = ast.parse(expr, mode="eval")
@@ -33,12 +34,15 @@ def _safe_eval(expr: str) -> float | None:
                     ast.Load,
                 ),
             ):
+                logger.warning("rejected by AST (%s): %r", type(n).__name__, expr[:100])
                 return None
         v = eval(compile(tree, "<e>", "eval"), {"__builtins__": {}})
         if isinstance(v, (int, float)) and abs(v) < 1e6:
             return float(v)
+        logger.debug("rejected by range/type (%r): %r", v, expr[:100])
         return None
-    except Exception:
+    except Exception as e:
+        logger.debug("eval failed (%s): %r", e, expr[:100])
         return None
 
 
@@ -113,7 +117,8 @@ def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool
 
 PROMPT_TMPL = (
     "Using each of {numbers} at most once with + - * / and parentheses, reach {target}.\n"
-    "Think in <think></think>, then final equation in <answer></answer>."
+    "Think in <think></think>, then final equation in <answer></answer>.\n"
+    "Example: <think>10-2=8, 8*3=24.</think> <answer>(10-2)*3</answer>"
 )
 
 

@@ -30,7 +30,7 @@ Target result: `+10-20% pass@1 on GSM8K vs base, flat or up on MATH-500, -30-40%
 
 ## Quickstart
 ```bash
-# Colab T4: pip install -r requirements-colab.txt
+# Colab T4: make install-colab
 # Vast/own GPU: pip install -r requirements.txt
 # smoke (Colab T4, ~15 min):
 python src/train_grpo.py --config configs/smoke_colab.yaml

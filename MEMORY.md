@@ -22,6 +22,8 @@
 - Lesson: reverse-generation (solution→problem) guarantees solvability = synthetic trick #1.
 - Run: `python src/train_countdown.py --config configs/countdown_05b.yaml`. Expect flat ~100 steps → jump. 0.5B may fail (expected), 1.5B learns.
 - Cost: free on Colab (0.5B smoke); 1.5B as single short budget run (<$10 total, cheap 4090 spot or Colab).
+- Smoke finding: format reward 0/40 hits in 50 steps (cold start). Fix: one-shot format demo in prompts + partial format credit (0.1/0.3/0.5).
+- Rollback rule: if next run's format reward is still always 0.0 or always 0.5 (binary, nothing in between), revert partial credit to the simple binary version.
 
 ## Main project — synthetic-data first (OPEN: recs vs extraction)
 - User wants synthetic generation as core learning goal.

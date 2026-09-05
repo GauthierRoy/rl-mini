@@ -20,5 +20,12 @@ def format_reward(completions, **kwargs) -> list[float]:
     out = []
     for c in completions:
         txt = c[0]["content"] if isinstance(c, list) else c
-        out.append(0.5 if pat.search(txt) else 0.0)
+        if pat.search(txt):
+            out.append(0.5)
+        elif "<think>" in txt and "<answer>" in txt:
+            out.append(0.3)
+        elif "<think>" in txt or "<answer>" in txt:
+            out.append(0.1)
+        else:
+            out.append(0.0)
     return out

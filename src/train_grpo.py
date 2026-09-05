@@ -12,7 +12,8 @@ from grpo_compat import build_grpo_config
 from rewards import correctness_reward, format_reward, length_penalty
 
 SYSTEM = (
-    "Solve step by step inside <think></think>, then put the final answer inside <answer></answer>."
+    "Solve step by step inside <think></think>, then put the final answer inside <answer></answer>.\n"
+    "Example: <think>2 apples + 3 apples = 5 apples.</think> <answer>#### 5</answer>"
 )
 
 
