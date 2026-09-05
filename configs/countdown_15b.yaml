@@ -1,4 +1,4 @@
-# Vast 4090/A100: 1.5B full learning run
+# Budget 1.5B run: keep short to stay free / <$10 total
 model: Qwen/Qwen2.5-1.5B-Instruct
 output_dir: outputs/countdown-15b
 num_tasks: 8000

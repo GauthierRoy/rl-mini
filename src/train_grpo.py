@@ -6,8 +6,9 @@ import yaml
 from datasets import load_dataset
 from peft import LoraConfig
 from transformers import AutoTokenizer
-from trl import GRPOConfig, GRPOTrainer
+from trl import GRPOTrainer
 
+from grpo_compat import build_grpo_config
 from rewards import correctness_reward, format_reward, length_penalty
 
 SYSTEM = (
@@ -58,7 +59,7 @@ def main(cfg_path):
             task_type="CAUSAL_LM",
             target_modules=cfg.get("lora_target_modules", ["q_proj", "v_proj"]),
         )
-    args = GRPOConfig(
+    args = build_grpo_config(
         output_dir=cfg["output_dir"],
         max_steps=cfg.get("max_steps", 1200),
         per_device_train_batch_size=cfg.get("per_device_train_batch_size", 4),

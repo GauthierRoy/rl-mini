@@ -2,7 +2,7 @@
 
 ## Who / goal
 - Gauthier Roy, MLE (Lifen, prod SFT 3B + vLLM 250K/day + quant, RecSys'25 oral, GT research).
-- Goal: resume piece + learn RL for LLMs. Focus: Reasoning + RLVR/GRPO. Time: 2-4 weeks. Compute: Colab smoke + VastAI/RunPod paid.
+- Goal: resume piece + learn RL for LLMs. Focus: Reasoning + RLVR/GRPO. Time: 2-4 weeks. Compute: free (Colab) or <$10 total.
 
 ## Key decisions
 - Pure GSM8K reproduction = tutorial, too weak for this level. Need original/custom.
@@ -21,7 +21,7 @@
 - Files: `src/envs/countdown.py` (reverse-gen generator + checker), `src/rewards_countdown.py`, `src/train_countdown.py`, `configs/countdown_05b.yaml` (Colab), `configs/countdown_15b.yaml` (Vast).
 - Lesson: reverse-generation (solution→problem) guarantees solvability = synthetic trick #1.
 - Run: `python src/train_countdown.py --config configs/countdown_05b.yaml`. Expect flat ~100 steps → jump. 0.5B may fail (expected), 1.5B learns.
-- Cost: Colab free + Vast 4090 ~$5 for 1.5B run.
+- Cost: free on Colab (0.5B smoke); 1.5B as single short budget run (<$10 total, cheap 4090 spot or Colab).
 
 ## Main project — synthetic-data first (OPEN: recs vs extraction)
 - User wants synthetic generation as core learning goal.
@@ -38,4 +38,4 @@
 - [ ] Data for flagship: MovieLens-100k cold split vs synthetic fashion vs AI4Privacy?
 
 ## Costs (est)
-- Countdown 1.5B: ~$5. Full flagship + ablations: $15-40 (4090) / $30-80 (A100).
+- Budget: free / <$10 total. Countdown 0.5B on Colab free; 1.5B as one short run only, no multi-ablation matrix.

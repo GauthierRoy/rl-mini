@@ -1,0 +1,6 @@
+# Colab (T4, CUDA 12) install.
+# vLLM's default wheel is CUDA 13 since v0.20 and fails to import on
+# Colab with `libcudart.so.13` (TRL imports vLLM eagerly, so even
+# `use_vllm: false` configs crash). Pin to the last CUDA 12 line.
+-r requirements.txt
+vllm<0.20

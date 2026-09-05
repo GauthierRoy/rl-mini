@@ -10,9 +10,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 from datasets import Dataset
 from peft import LoraConfig
 from transformers import AutoTokenizer
-from trl import GRPOConfig, GRPOTrainer
+from trl import GRPOTrainer
 
 from envs.countdown import generate_task, make_prompt
+from grpo_compat import build_grpo_config
 from rewards_countdown import correctness_reward, format_reward
 
 
@@ -47,7 +48,7 @@ def main(cfg_path):
             task_type="CAUSAL_LM",
             target_modules=["q_proj", "v_proj"],
         )
-    args = GRPOConfig(
+    args = build_grpo_config(
         output_dir=cfg["output_dir"],
         max_steps=cfg.get("max_steps", 500),
         per_device_train_batch_size=cfg.get("per_device_train_batch_size", 4),

@@ -1,4 +1,4 @@
-# Full run: 1x RTX 4090 24GB (~$0.45/hr) or A100 40GB (~$0.9/hr)
+# Budget run: keep short (~300-500 steps) to stay free / <$10 total
 model: Qwen/Qwen2.5-1.5B-Instruct
 dataset: gsm8k  # train split
 output_dir: outputs/qwen15b-grpo

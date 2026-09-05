@@ -1,4 +1,4 @@
-# TinyR1-Zero — GRPO Reasoning on a 1.5B Model (<$80)
+# TinyR1-Zero — GRPO Reasoning on a 1.5B Model (free / <$10)
 
 Reproduce DeepSeek R1-Zero with GRPO on `Qwen2.5-1.5B-Instruct`, then beat the naive baseline with **length-controlled reasoning** (accuracy up, tokens down).
 
@@ -22,7 +22,7 @@ TRL `GRPOTrainer` + vLLM sampling + LoRA (full-ft as stretch) + W&B + `math-veri
 
 ## 3-week plan
 **Wk1 — Baselines + infra:** SFT eval (no train), GRPO smoke on Colab (50 steps, G=4), W&B + eval harness working.
-**Wk2 — Core GRPO:** Full run on Vast (1x 4090/A100, ~800-1500 steps, G=8), tune correctness + format rewards, log length explosion.
+**Wk2 — Core GRPO:** Single budget run (Colab free or cheap 4090 spot, ~300-500 steps, G=4-8, <$10 total), tune correctness + format rewards, log length explosion.
 **Wk3 — Differentiator + writeup:** Add length penalty / overlong filtering, ablate `G`, `beta`, `lr`. Ship curves + failure gallery + demo.
 **Wk4 buffer:** Blog post (you already write) + resume bullet + Gradio demo served with vLLM.
 
@@ -30,12 +30,13 @@ Target result: `+10-20% pass@1 on GSM8K vs base, flat or up on MATH-500, -30-40%
 
 ## Quickstart
 ```bash
-pip install -r requirements.txt
+# Colab T4: pip install -r requirements-colab.txt
+# Vast/own GPU: pip install -r requirements.txt
 # smoke (Colab T4, ~15 min):
 python src/train_grpo.py --config configs/smoke_colab.yaml
 python src/eval.py --model outputs/smoke --datasets gsm8k --num-samples 100
-# full (Vast 4090/A100):
+# budget run (cheap 4090 spot or Colab, <$10 total):
 bash scripts/run_vast.sh
 ```
 
-See `configs/` for hyperparams and `scripts/run_vast.sh` for exact Vast template + cost.
+See `configs/` for hyperparams and `scripts/run_vast.sh` for exact budget template (free / <$10).
