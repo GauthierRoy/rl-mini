@@ -61,8 +61,8 @@ def main(cfg_path):
         temperature=float(cfg.get("temperature", 0.9)),
         use_vllm=False,
         log_completions=True,
-        logging_steps=5,
-        save_steps=100,
+        logging_steps=cfg.get("logging_steps", 5),
+        save_steps=cfg.get("save_steps", 100),
         report_to="none",
         reward_weights=weights,
     )
