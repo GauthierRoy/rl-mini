@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Linters / tools
+.ruff_cache/
+.ty_cache/
+.mypy_cache/
+.pytype/
+
+# uv (runtime deps stay in requirements.txt; hook may drop a stray uv.lock)
+uv.lock
+.uv/
+
+# Training outputs / logs
+outputs/
+wandb/
+lightning_logs/
+
+# Notebooks / data scratch
+.ipynb_checkpoints/
+*.ipynb_checkpoints

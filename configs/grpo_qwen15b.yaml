@@ -1,0 +1,38 @@
+# Full run: 1x RTX 4090 24GB (~$0.45/hr) or A100 40GB (~$0.9/hr)
+model: Qwen/Qwen2.5-1.5B-Instruct
+dataset: gsm8k  # train split
+output_dir: outputs/qwen15b-grpo
+
+# GRPO core
+num_generations: 8        # G per prompt
+per_device_train_batch_size: 4  # effective = 4*8 = 32 generations/step
+gradient_accumulation_steps: 4
+max_prompt_length: 256
+max_completion_length: 512
+num_train_epochs: 1
+max_steps: 1200
+
+learning_rate: 1.0e-6
+beta: 0.001               # KL coef — ablate [0, 0.001, 0.01]
+epsilon: 0.2              # clip range
+temperature: 0.9
+top_p: 1.0
+
+# LoRA (fits 4090; disable for full-ft on A100)
+use_peft: true
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.05
+lora_target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+# Rewards (weights) — see src/rewards.py
+reward_weights:
+  correctness: 2.0
+  format: 0.5
+  length_penalty: 0.3     # 0 in phase 1, 0.3 in phase 2
+
+use_vllm: true
+vllm_gpu_memory_utilization: 0.4
+log_with: wandb
+logging_steps: 5
+save_steps: 100

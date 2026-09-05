@@ -1,0 +1,55 @@
+[project]
+name = "tiny-r1-zero"
+version = "0.1.0"
+description = "GRPO reasoning on a 1.5B model"
+readme = "README.md"
+requires-python = ">=3.10"
+# Runtime deps stay in requirements.txt (Colab / Vast compat).
+# Keep this list minimal so `ty` pre-commit hook stays fast.
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "ruff>=0.16",
+  "ty>=0.0.8",
+  "pre-commit>=4.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+exclude = [
+  ".git",
+  ".venv",
+  "__pycache__",
+  "outputs",
+  "*.ipynb_checkpoints",
+]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "W"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["envs", "rewards", "rewards_countdown"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ty.environment]
+root = ["./src"]
+python-version = "3.12"
+
+[tool.ty.src]
+include = ["src", "scripts"]
+respect-ignore-files = true
+
+# Heavy ML deps (torch, vllm, trl, ...) aren't installed in the
+# pre-commit hook env. Ignore unresolved imports there; ruff still
+# catches typos via F821, and ty still checks first-party code.
+# Tighten later once you run `ty check` inside your training venv.
+[tool.ty.rules]
+unresolved-import = "ignore"
