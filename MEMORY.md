@@ -24,6 +24,7 @@
 - Cost: free on Colab (0.5B smoke); 1.5B as single short budget run (<$10 total, cheap 4090 spot or Colab).
 - Smoke finding: format reward 0/40 hits in 50 steps (cold start). Fix: one-shot format demo in prompts + partial format credit (0.1/0.3/0.5).
 - Rollback rule: if next run's format reward is still always 0.0 or always 0.5 (binary, nothing in between), revert partial credit to the simple binary version.
+- Countdown 0.5B full run (300 steps, G=8, Colab T4, Sep 2026): FAILED as predicted. correctness mean 0.0 every step, format mean 0.007-0.025 (rare <think> flickers, never consolidates), frac_zero_std 0.2-0.8, 47-67% completions truncated at 256 tok. Cause: cold start — Instruct answers in markdown/LaTeX, never emits <answer>, so reward is always 0. Fixes queued: assistant-prefill "<think>", dense shaping (partial credit for valid equation), 3-number curriculum, mask truncated. Runbook: `notebooks/countdown_colab.ipynb`.
 
 ## Main project — synthetic-data first (OPEN: recs vs extraction)
 - User wants synthetic generation as core learning goal.
