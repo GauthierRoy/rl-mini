@@ -34,6 +34,15 @@ def main(cfg_path):
     tok = AutoTokenizer.from_pretrained(cfg["model"])
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    if "qwen3" in cfg["model"].lower():
+        # Same as train_countdown: Qwen3 defaults to thinking mode; force direct-answer.
+        _chat = tok.apply_chat_template
+
+        def _no_think(*args, **kwargs):
+            kwargs.setdefault("enable_thinking", False)
+            return _chat(*args, **kwargs)
+
+        tok.apply_chat_template = _no_think
     ds = load_gsm8k(tok)
     rw = cfg.get("reward_weights", {})
     funcs, weights = [], []

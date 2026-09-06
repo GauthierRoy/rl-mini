@@ -1,5 +1,6 @@
-# Step 1 starter: Colab T4 friendly
-model: Qwen/Qwen2.5-0.5B-Instruct
+# Small-model slot: Colab T4 friendly (was Qwen2.5-0.5B: cold-start failure,
+# never emitted <answer> tags in 300 steps). Qwen3-0.6B follows format ~2x better.
+model: Qwen/Qwen3-0.6B
 output_dir: outputs/countdown-05b
 num_tasks: 2000
 num_numbers: 4

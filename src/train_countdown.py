@@ -35,6 +35,16 @@ def main(cfg_path):
     tok = AutoTokenizer.from_pretrained(cfg["model"])
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    if "qwen3" in cfg["model"].lower():
+        # Qwen3 template defaults to thinking mode (multi-k-token chains:
+        # blows the 256tok budget and skips our <answer> tags). Force direct-answer mode.
+        _chat = tok.apply_chat_template
+
+        def _no_think(*args, **kwargs):
+            kwargs.setdefault("enable_thinking", False)
+            return _chat(*args, **kwargs)
+
+        tok.apply_chat_template = _no_think
     ds = build_dataset(cfg.get("num_tasks", 2000), cfg.get("num_numbers", 4))
     funcs = [correctness_reward, format_reward]
     weights = [2.0, 0.5]
