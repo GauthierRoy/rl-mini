@@ -66,14 +66,15 @@ def main(cfg_path):
         report_to="none",
         reward_weights=weights,
     )
-    GRPOTrainer(
+    trainer = GRPOTrainer(
         model=cfg["model"],
         args=args,
         train_dataset=ds,
         reward_funcs=funcs,
         peft_config=peft,
         processing_class=tok,
-    ).train()
+    )
+    trainer.train(resume_from_checkpoint=cfg.get("resume", False))
 
 
 if __name__ == "__main__":
