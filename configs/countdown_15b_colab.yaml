@@ -1,0 +1,21 @@
+# 1.5B on Colab T4 free: batch 1 + accum 8, G=8, no vLLM, Drive output.
+# ~60-90s/step -> 300 steps spans 2 sessions; resume:true + save_steps:25 covers that.
+model: Qwen/Qwen2.5-1.5B-Instruct
+output_dir: /content/drive/MyDrive/rl-mini/countdown-15b
+num_tasks: 4000
+num_numbers: 4
+num_generations: 8
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+max_completion_length: 256
+max_steps: 300
+learning_rate: 0.000001
+beta: 0.001
+temperature: 0.9
+use_peft: true
+lora_r: 32
+lora_alpha: 64
+logging_steps: 5
+save_steps: 25
+resume: false
+gradient_checkpointing: true
