@@ -36,7 +36,7 @@ def main(cfg_path):
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     if "qwen3" in cfg["model"].lower():
-        # Qwen3 template defaults to thinking mode (multi-k-token chains:
+        # Qwen3/3.5 template defaults to thinking mode (multi-k-token chains:
         # blows the 256tok budget and skips our <answer> tags). Force direct-answer mode.
         _chat = tok.apply_chat_template
 
@@ -56,7 +56,7 @@ def main(cfg_path):
             lora_dropout=0.05,
             bias="none",
             task_type="CAUSAL_LM",
-            target_modules=["q_proj", "v_proj"],
+            target_modules=cfg.get("lora_target_modules", ["q_proj", "v_proj"]),
         )
     args = build_grpo_config(
         output_dir=cfg["output_dir"],
@@ -69,6 +69,8 @@ def main(cfg_path):
         learning_rate=float(cfg.get("learning_rate", 1e-6)),
         beta=float(cfg.get("beta", 0.001)),
         temperature=float(cfg.get("temperature", 0.9)),
+        top_p=float(cfg.get("top_p", 1.0)),
+        gradient_checkpointing=bool(cfg.get("gradient_checkpointing", False)),
         use_vllm=False,
         log_completions=True,
         logging_steps=cfg.get("logging_steps", 5),

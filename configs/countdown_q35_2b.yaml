@@ -1,0 +1,25 @@
+# Qwen3.5-2B countdown on Colab T4 (tight): batch 1 + accum 8, G=8, no vLLM.
+# ~60-90s/step -> 300 steps spans 2 sessions; resume + save_steps:25 covers that.
+# If PEFT errors with "no modules matched", switch lora_target_modules to
+# [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj].
+model: principled-intelligence/Qwen3.5-2B-text-only
+output_dir: /content/drive/MyDrive/rl-mini/countdown-q35-2b
+num_tasks: 4000
+num_numbers: 4
+num_generations: 8
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+max_completion_length: 256
+max_steps: 300
+learning_rate: 0.000001
+beta: 0.001
+temperature: 1.0
+top_p: 1.0
+use_peft: true
+lora_r: 32
+lora_alpha: 64
+lora_target_modules: [q_proj, v_proj]
+logging_steps: 5
+save_steps: 25
+resume: false
+gradient_checkpointing: true
