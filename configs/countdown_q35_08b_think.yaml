@@ -14,7 +14,9 @@ per_device_train_batch_size: 2
 gradient_accumulation_steps: 4
 max_completion_length: 256
 max_steps: 300
-learning_rate: 0.000001
+# 5e-6 per Unsloth T4-scale GRPO configs (1e-6 never hit the clip boundary
+# in the non-thinking run: clip_ratio/region_mean was 0.000 for 300 steps).
+learning_rate: 0.000005
 beta: 0.001
 temperature: 1.0
 top_p: 1.0
