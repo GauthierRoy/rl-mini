@@ -97,28 +97,38 @@ def _enumerate(nums):
                 yield from _enumerate(rest + [float(a / b)])
 
 
-def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool, str]:
-    """Verify: uses each given number exactly once, evals to target."""
+def grade_equation(numbers: list[int], target: int, equation: str) -> tuple[float, str]:
+    """2.0 exact solve; 0.3 exact numbers but wrong value; 0.1 parses using
+    only allowed numbers; else 0.0. Echo-safe: the worked example uses
+    out-of-range numbers so copying it scores 0 on every tier."""
     nums_used = list(map(int, re.findall(r"\d+", equation)))
     # multiset check
     from collections import Counter
 
-    if Counter(nums_used) != Counter(numbers):
-        return False, f"must use each of {numbers} exactly once"
     if not nums_used:
-        return False, "no numbers found"
+        return 0.0, "no numbers found"
     v = _safe_eval(equation)
     if v is None:
-        return False, "unparseable"
-    if abs(v - target) < 1e-6:
-        return True, "correct"
-    return False, f"evals to {v}, want {target}"
+        return 0.0, "unparseable"
+    if Counter(nums_used) == Counter(numbers):
+        if abs(v - target) < 1e-6:
+            return 2.0, "correct"
+        return 0.3, f"evals to {v}, want {target}"
+    if not (Counter(nums_used) - Counter(numbers)):
+        return 0.1, "valid equation, wrong numbers"
+    return 0.0, f"uses numbers outside {numbers}"
+
+
+def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool, str]:
+    """Verify: uses each given number exactly once, evals to target."""
+    score, reason = grade_equation(numbers, target, equation)
+    return score == 2.0, reason
 
 
 PROMPT_TMPL = (
     "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
-    "Write the final equation in <answer></answer>.\n"
-    "Example: <answer>(20-8)*2</answer>"
+    "Write your final equation on the last line.\n"
+    "Example: with [20, 8, 2]: (20-8)*2"
 )
 
 THINK_PROMPT_TMPL = (

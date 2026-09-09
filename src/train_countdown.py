@@ -50,9 +50,13 @@ def main(cfg_path):
 
         tok.apply_chat_template = _think_mode
     ds = build_dataset(cfg.get("num_tasks", 2000), cfg.get("num_numbers", 4), thinking=thinking)
-    funcs = [correctness_reward, format_reward]
-    weights = [2.0, 0.5]
+    # Non-thinking runs are correctness-only (SimpleRL-Zero: strict format
+    # hurts exploration); thinking runs add format + overlong shaping.
+    funcs = [correctness_reward]
+    weights = [2.0]
     if thinking:
+        funcs.append(format_reward)
+        weights.append(0.5)
         funcs.append(overlong_penalty)
         weights.append(1.0)
     peft = None
