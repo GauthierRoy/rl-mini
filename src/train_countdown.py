@@ -75,6 +75,10 @@ def main(cfg_path):
         temperature=float(cfg.get("temperature", 0.9)),
         top_p=float(cfg.get("top_p", 1.0)),
         gradient_checkpointing=bool(cfg.get("gradient_checkpointing", False)),
+        # Memory-efficient fused CE kernels (fix OOM on 248k vocab). Unknown
+        # keys are warned-and-dropped by grpo_compat on older TRL versions.
+        use_liger_loss=bool(cfg.get("use_liger_loss", False)),
+        use_liger_kernel=bool(cfg.get("use_liger_kernel", False)),
         use_vllm=False,
         log_completions=True,
         logging_steps=cfg.get("logging_steps", 5),

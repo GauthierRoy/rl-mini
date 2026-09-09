@@ -8,8 +8,10 @@ thinking: true
 num_tasks: 2000
 num_numbers: 4
 num_generations: 8
-per_device_train_batch_size: 4
-gradient_accumulation_steps: 2
+# Thinking traces fill the 256 tok cap: batch 2x4 fits T4 where 4x2 OOMs
+# (selective_log_softmax over the 248k vocab). Same 16 traj/step throughput.
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4
 max_completion_length: 256
 max_steps: 300
 learning_rate: 0.000001
@@ -23,4 +25,7 @@ lora_target_modules: [q_proj, v_proj]
 logging_steps: 5
 save_steps: 25
 resume: false
-gradient_checkpointing: false
+gradient_checkpointing: true
+# Fused kernels dodge the 248k-vocab logits OOM. Needs: pip install liger-kernel.
+# If TRL errors on unknown arch, set back to false (batch 2 above fits anyway).
+use_liger_loss: true
