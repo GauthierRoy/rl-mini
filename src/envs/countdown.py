@@ -98,13 +98,13 @@ def _enumerate(nums):
 
 
 def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool, str]:
-    """Verify: only uses given numbers (each at most as many times as it appears), evals to target."""
+    """Verify: uses each given number exactly once, evals to target."""
     nums_used = list(map(int, re.findall(r"\d+", equation)))
     # multiset check
     from collections import Counter
 
-    if Counter(nums_used) - Counter(numbers):
-        return False, f"uses numbers outside {numbers}"
+    if Counter(nums_used) != Counter(numbers):
+        return False, f"must use each of {numbers} exactly once"
     if not nums_used:
         return False, "no numbers found"
     v = _safe_eval(equation)
@@ -116,14 +116,21 @@ def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool
 
 
 PROMPT_TMPL = (
-    "Using each of {numbers} at most once with + - * / and parentheses, reach {target}.\n"
+    "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
     "Think in <think></think>, then final equation in <answer></answer>.\n"
-    "Example: <think>10-2=8, 8*3=24.</think> <answer>(10-2)*3</answer>"
+    "Example: <think>20-8=12, 12*2=24.</think> <answer>(20-8)*2</answer>"
+)
+
+THINK_PROMPT_TMPL = (
+    "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
+    "Reason step by step, then write the final equation alone on the last line.\n"
+    "Example: (20-8)*2"
 )
 
 
-def make_prompt(numbers, target) -> str:
-    return PROMPT_TMPL.format(numbers=numbers, target=target)
+def make_prompt(numbers, target, thinking: bool = False) -> str:
+    tmpl = THINK_PROMPT_TMPL if thinking else PROMPT_TMPL
+    return tmpl.format(numbers=numbers, target=target)
 
 
 def extract_answer(text: str) -> str:

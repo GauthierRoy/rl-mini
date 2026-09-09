@@ -17,14 +17,16 @@ from grpo_compat import build_grpo_config
 from rewards_countdown import correctness_reward, format_reward
 
 
-def build_dataset(n: int, num_numbers: int, seed: int = 0) -> Dataset:
+def build_dataset(n: int, num_numbers: int, seed: int = 0, thinking: bool = False) -> Dataset:
     import random
 
     random.seed(seed)
     rows = {"prompt": [], "numbers": [], "target": []}
     for _ in range(n):
         t = generate_task(num_numbers=num_numbers)
-        rows["prompt"].append([{"role": "user", "content": make_prompt(t["numbers"], t["target"])}])
+        rows["prompt"].append(
+            [{"role": "user", "content": make_prompt(t["numbers"], t["target"], thinking)}]
+        )
         rows["numbers"].append(t["numbers"])
         rows["target"].append(t["target"])
     return Dataset.from_dict(rows)
@@ -35,17 +37,19 @@ def main(cfg_path):
     tok = AutoTokenizer.from_pretrained(cfg["model"])
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    thinking = bool(cfg.get("thinking", False))
     if "qwen3" in cfg["model"].lower():
-        # Qwen3/3.5 template defaults to thinking mode (multi-k-token chains:
-        # blows the 256tok budget and skips our <answer> tags). Force direct-answer mode.
+        # Qwen3/3.5 template manages a native <think> block. Non-thinking
+        # appends an empty closed block (short direct answers, fits budget);
+        # thinking leaves it open for native reasoning traces.
         _chat = tok.apply_chat_template
 
-        def _no_think(*args, **kwargs):
-            kwargs.setdefault("enable_thinking", False)
+        def _think_mode(*args, **kwargs):
+            kwargs.setdefault("enable_thinking", thinking)
             return _chat(*args, **kwargs)
 
-        tok.apply_chat_template = _no_think
-    ds = build_dataset(cfg.get("num_tasks", 2000), cfg.get("num_numbers", 4))
+        tok.apply_chat_template = _think_mode
+    ds = build_dataset(cfg.get("num_tasks", 2000), cfg.get("num_numbers", 4), thinking=thinking)
     funcs = [correctness_reward, format_reward]
     weights = [2.0, 0.5]
     peft = None
