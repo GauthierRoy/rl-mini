@@ -123,7 +123,7 @@ PROMPT_TMPL = (
 
 THINK_PROMPT_TMPL = (
     "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
-    "Reason step by step, then write the final equation alone on the last line.\n"
+    "Reason briefly (a few steps at most), then write the final equation alone on the last line.\n"
     "Example: (20-8)*2"
 )
 

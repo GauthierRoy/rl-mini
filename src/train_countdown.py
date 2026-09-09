@@ -14,7 +14,7 @@ from trl import GRPOTrainer
 
 from envs.countdown import generate_task, make_prompt
 from grpo_compat import build_grpo_config
-from rewards_countdown import correctness_reward, format_reward
+from rewards_countdown import correctness_reward, format_reward, overlong_penalty
 
 
 def build_dataset(n: int, num_numbers: int, seed: int = 0, thinking: bool = False) -> Dataset:
@@ -52,6 +52,9 @@ def main(cfg_path):
     ds = build_dataset(cfg.get("num_tasks", 2000), cfg.get("num_numbers", 4), thinking=thinking)
     funcs = [correctness_reward, format_reward]
     weights = [2.0, 0.5]
+    if thinking:
+        funcs.append(overlong_penalty)
+        weights.append(1.0)
     peft = None
     if cfg.get("use_peft"):
         peft = LoraConfig(
@@ -79,6 +82,7 @@ def main(cfg_path):
         # keys are warned-and-dropped by grpo_compat on older TRL versions.
         use_liger_loss=bool(cfg.get("use_liger_loss", False)),
         use_liger_kernel=bool(cfg.get("use_liger_kernel", False)),
+        mask_truncated_completions=bool(cfg.get("mask_truncated_completions", True)),
         use_vllm=False,
         log_completions=True,
         logging_steps=cfg.get("logging_steps", 5),

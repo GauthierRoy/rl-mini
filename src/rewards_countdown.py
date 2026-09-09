@@ -28,6 +28,21 @@ def correctness_reward(completions, numbers, target, **kwargs) -> list[float]:
     return out
 
 
+def overlong_penalty(completions, **kwargs) -> list[float]:
+    """DAPO-style soft band: free below ~175 tok, linear to -0.5 at the cap.
+    Word counts approximate tokens (~0.75x); truncated rollouts are masked
+    from the loss separately via mask_truncated_completions."""
+    out = []
+    for c in completions:
+        txt = c[0]["content"] if isinstance(c, list) else c
+        n = len(txt.split())
+        if n <= 130:
+            out.append(0.0)
+        else:
+            out.append(-0.5 * min(1.0, (n - 130) / 60))
+    return out
+
+
 def format_reward(completions, **kwargs) -> list[float]:
     full = re.compile(r"<think>.*?</think>\s*<answer>.*?</answer>", re.DOTALL)
     think = re.compile(r"<think>.*?</think>", re.DOTALL)

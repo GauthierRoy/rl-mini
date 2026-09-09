@@ -26,7 +26,9 @@ lora_alpha: 64
 lora_target_modules: [q_proj, v_proj]
 logging_steps: 5
 save_steps: 25
-resume: false
+# resume:true keeps the ~30 steps of drift from the killed run (model+optim
+# only; prompt/rewards rebuild from current code).
+resume: true
 gradient_checkpointing: true
 # Fused kernels dodge the 248k-vocab logits OOM. Needs: pip install liger-kernel.
 # If TRL errors on unknown arch, set back to false (batch 2 above fits anyway).
