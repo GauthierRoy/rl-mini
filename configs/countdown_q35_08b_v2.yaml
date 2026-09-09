@@ -1,0 +1,29 @@
+# Qwen3.5-0.8B countdown, NON-thinking answer-only (T4 free). Overnight run.
+# Lessons baked in: exact-once checker, echo-proof example (20-8)*2, lone
+# <answer> = full format credit (template pre-closes <think>), LR 5e-6.
+# The thinking variant overflowed 256 tok on 100% of rollouts; revisit it
+# with a bigger cap (384+) on a bigger GPU, not here.
+model: principled-intelligence/Qwen3.5-0.8B-text-only
+output_dir: /content/drive/MyDrive/rl-mini/countdown-q35-08b-v2
+thinking: false
+num_tasks: 2000
+num_numbers: 4
+num_generations: 8
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 2
+max_completion_length: 256
+max_steps: 300
+learning_rate: 0.000005
+beta: 0.001
+temperature: 1.0
+top_p: 1.0
+use_peft: true
+lora_r: 32
+lora_alpha: 64
+lora_target_modules: [q_proj, v_proj]
+logging_steps: 5
+save_steps: 25
+resume: false
+gradient_checkpointing: false
+use_liger_loss: true
+mask_truncated_completions: true

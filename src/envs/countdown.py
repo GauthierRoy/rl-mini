@@ -117,8 +117,8 @@ def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool
 
 PROMPT_TMPL = (
     "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
-    "Think in <think></think>, then final equation in <answer></answer>.\n"
-    "Example: <think>20-8=12, 12*2=24.</think> <answer>(20-8)*2</answer>"
+    "Write the final equation in <answer></answer>.\n"
+    "Example: <answer>(20-8)*2</answer>"
 )
 
 THINK_PROMPT_TMPL = (

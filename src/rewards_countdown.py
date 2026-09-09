@@ -46,6 +46,7 @@ def overlong_penalty(completions, **kwargs) -> list[float]:
 def format_reward(completions, **kwargs) -> list[float]:
     full = re.compile(r"<think>.*?</think>\s*<answer>.*?</answer>", re.DOTALL)
     think = re.compile(r"<think>.*?</think>", re.DOTALL)
+    answer = re.compile(r"<answer>.*?</answer>", re.DOTALL)
     out = []
     for c in completions:
         txt = c[0]["content"] if isinstance(c, list) else c
@@ -57,6 +58,10 @@ def format_reward(completions, **kwargs) -> list[float]:
             out.append(0.3)
         elif think.search(txt) or "</think>" in txt:
             out.append(0.3)
+        elif answer.search(txt):
+            # Non-thinking rollouts start after a pre-closed <think> block,
+            # so a lone <answer> block is full format compliance.
+            out.append(0.5)
         elif "<think>" in txt or "<answer>" in txt:
             out.append(0.1)
         else:
