@@ -5,6 +5,10 @@ import re
 from envs.countdown import grade_equation
 
 
+def _clean_chunk(chunk: str) -> str:
+    return re.sub(r"^[^0-9(\-]*", "", chunk.strip().split("=")[0]).strip()
+
+
 def candidate_equations(text: str) -> list[str]:
     m = re.search(r"<answer>(.*?)</answer>", text, re.DOTALL)
     if m:
@@ -14,9 +18,13 @@ def candidate_equations(text: str) -> list[str]:
     for chunk in re.split(r"[\n;]+", tail):
         if not re.search(r"\d", chunk):
             continue
-        eq = re.sub(r"^[^0-9(\-]*", "", chunk.strip().split("=")[0]).strip()
+        eq = _clean_chunk(chunk)
         if eq:
             eqs.append(eq)
+        for g in re.findall(r"\([^()]*\)", chunk):
+            g = _clean_chunk(g)
+            if g and g not in eqs:
+                eqs.append(g)
     return eqs
 
 
