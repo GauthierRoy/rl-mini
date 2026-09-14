@@ -34,7 +34,14 @@ def build_dataset(n: int, num_numbers: int, seed: int = 0, thinking: bool = Fals
 
 def main(cfg_path):
     cfg = yaml.safe_load(open(cfg_path))
-    tok = AutoTokenizer.from_pretrained(cfg["model"])
+    model = cfg["model"]
+    if model.startswith(("/", ".", "file://")) or os.path.isdir(model):
+        if not os.path.isdir(model):
+            raise FileNotFoundError(
+                f"model dir not found: {model}. "
+                "Run src/sft_format.py first and mount Drive (/content/drive)."
+            )
+    tok = AutoTokenizer.from_pretrained(model)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     thinking = bool(cfg.get("thinking", False))
