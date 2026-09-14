@@ -41,6 +41,8 @@ def build_sft_dataset(cfg, tok):
 
 
 def main(cfg_path):
+    import inspect
+
     from peft import LoraConfig
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from trl import SFTConfig, SFTTrainer
@@ -58,7 +60,7 @@ def main(cfg_path):
         task_type="CAUSAL_LM",
         target_modules=cfg.get("lora_target_modules", ["q_proj", "v_proj"]),
     )
-    args = SFTConfig(
+    kwargs = dict(
         output_dir=cfg["output_dir"],
         num_train_epochs=float(cfg.get("num_train_epochs", 1)),
         per_device_train_batch_size=cfg.get("per_device_train_batch_size", 4),
@@ -69,8 +71,14 @@ def main(cfg_path):
         report_to="none",
         gradient_checkpointing=bool(cfg.get("gradient_checkpointing", True)),
         dataset_text_field="text",
-        max_seq_length=cfg.get("max_seq_length", 256),
     )
+    seq_len = cfg.get("max_seq_length", 256)
+    accepted = set(inspect.signature(SFTConfig).parameters)
+    if "max_seq_length" in accepted:
+        kwargs["max_seq_length"] = seq_len
+    elif "max_length" in accepted:
+        kwargs["max_length"] = seq_len
+    args = SFTConfig(**{k: v for k, v in kwargs.items() if k in accepted})
     trainer = SFTTrainer(
         model=AutoModelForCausalLM.from_pretrained(cfg["model"], trust_remote_code=True),
         args=args,
