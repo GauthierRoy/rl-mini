@@ -38,7 +38,9 @@ def main(cfg_path):
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     thinking = bool(cfg.get("thinking", False))
-    if "qwen3" in cfg["model"].lower():
+    if thinking or "qwen3" in cfg["model"].lower() or os.path.isdir(cfg["model"]):
+        # Local merged checkpoints lose the "qwen3" name substring but keep
+        # its template, so a local path alone triggers the patch too.
         # Qwen3/3.5 template manages a native <think> block. Non-thinking
         # appends an empty closed block (short direct answers, fits budget);
         # thinking leaves it open for native reasoning traces.

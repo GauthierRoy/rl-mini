@@ -130,6 +130,38 @@ def check_equation(numbers: list[int], target: int, equation: str) -> tuple[bool
     return score == 2.0, reason
 
 
+def find_equation(numbers: list[int], target: int) -> str | None:
+    """Brute-force exact-once equation (tiny n only). Powers the SFT
+    cold-start data; the generator guarantees one exists."""
+    from fractions import Fraction
+
+    tgt = Fraction(target)
+
+    def rec(items: list) -> str | None:
+        if len(items) == 1:
+            return items[0][1] if items[0][0] == tgt else None
+        for i in range(len(items)):
+            for j in range(len(items)):
+                if i == j:
+                    continue
+                rest = [items[k] for k in range(len(items)) if k != i and k != j]
+                (a, ea), (b, eb) = items[i], items[j]
+                cands = [
+                    (a + b, f"({ea}+{eb})"),
+                    (a - b, f"({ea}-{eb})"),
+                    (a * b, f"({ea}*{eb})"),
+                ]
+                if b != 0 and a % b == 0:
+                    cands.append((a / b, f"({ea}/{eb})"))
+                for v, e in cands:
+                    r = rec(rest + [(v, e)])
+                    if r is not None:
+                        return r
+        return None
+
+    return rec([(Fraction(x), str(x)) for x in numbers])
+
+
 PROMPT_TMPL = (
     "Using each of {numbers} exactly once with + - * / and parentheses, reach {target}.\n"
     "Write your final equation on the last line.\n"
